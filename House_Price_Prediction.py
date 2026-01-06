@@ -1,42 +1,30 @@
-# Import libraries
 import pandas as pd
-from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error, r2_score
-import matplotlib.pyplot as plt
+from sklearn.metrics import mean_absolute_error
 
-# Load dataset
-data = fetch_california_housing()
-df = pd.DataFrame(data.data, columns=data.feature_names)
-df['target'] = data.target
+# 1. Load your dataset
+df = pd.read_csv('/content/archive.zip')
 
-# Explore data
-print(df.head())
-print(df.info())
-print(df.describe())
+# 2. Select features (X) and target variable (y)
+X = df[['Avg. Area Income', 'Avg. Area House Age', 'Avg. Area Number of Rooms', 'Area Population']]
+y = df['Price']
 
-# Split data
-X = df.drop('target', axis=1)
-y = df['target']
+# 3. Split the data into Training (80%) and Testing (20%) sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Train model
-model = RandomForestRegressor(n_estimators=100)
+# 4. Initialize and Train the Linear Regression model
+model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Make predictions
-y_pred = model.predict(X_test)
+# 5. Make Predictions
+predictions = model.predict(X_test)
 
-# Evaluate model
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-print(f"Mean Squared Error: {mse}")
-print(f"R2 Score: {r2}")
+# 6. Evaluate the model performance
+mae = mean_absolute_error(y_test, predictions)
+print(f"Mean Absolute Error: ${mae:.2f}")
 
-# Plot predictions
-plt.scatter(y_test, y_pred)
-plt.xlabel("Actual Prices")
-plt.ylabel("Predicted Prices")
-plt.show()
+# Example: Predict price for a new house
+new_house = [[70000, 6, 7, 30000]] # Sample feature values
+predicted_price = model.predict(new_house)
+print(f"Predicted Price: ${predicted_price[0]:.2f}")
